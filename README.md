@@ -5,7 +5,7 @@ Just a persistent piece of junk.
 
 ## 🔗 Live Demo
 
-[https://your-project-name.vercel.app](https://your-project-name.vercel.app)
+[https://your-project-name.vercel.app](https://twenty-steps.vercel.app/)
 
 ## ⚠️ Warning
 
@@ -14,9 +14,9 @@ Just a persistent piece of junk.
 
 ## 🖼 Preview
 
-<div align="center" style="background-color: #f9f9f9; padding: 40px; border-radius: 10px;">
-  <img src="public/preview.png" width="300" alt="doll-preview" />
-</div>
+<p align="center">
+  <img src="public/preview.png" width="300" alt="preview" />
+</p>
 
 ## 🛠 Tech Stack
 
