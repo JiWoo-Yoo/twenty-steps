@@ -9,6 +9,6 @@ body, html, #root {
   width: 100%;
   height: 100%;
   overflow: hidden; /* 스크롤바 절대 금지 */
-  background-color: white; /* 기본 배경 */
+
   font-family: 'Pretendard', sans-serif; 
 }

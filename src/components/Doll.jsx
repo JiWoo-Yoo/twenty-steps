@@ -1,70 +1,127 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { DOLL_IMAGES, COMMON_ASSETS } from '../constants/dollAssets';
 
-export const Doll = ({ step }) => {
-  const [dollData] = useState(() => {
-    // 20단계: 해방 (정면 거대 상자)
-    if (step === 20) {
-      return {
-        style: { top: '50%', left: '50%', transform: 'translate(-50%, -50%) scale(4)' },
-        pose: 'pose-center'
-      };
-    }
+// ⭐️ 스텝별 눈알 크기가 다르므로, 이동 반경(radius)을 개별 제어하도록 추가
+const PUPIL_POSITIONS = {
+    3: { 
+      leftEye: { top: '27.7%', left: '40.5%', width: '3%', radius: 2 }, // 작게 움직임
+      rightEye: { top: '27.7%', left: '45.5%', width: '3%', radius: 2 }
+    },
+    4: { 
+        leftEye: { top: '41%', left: '58%', width: '3%', radius: 1.5 }, // 작게 움직임
+        rightEye: { top: '46%', left: '58%', width: '3%', radius: 1.5 }
+      },
+      5: { 
+        leftEye: { top: '40%', left: '76%', width: '3%', radius: 10 }, // 작게 움직임
+        rightEye: { top: '27%', left: '81%', width: '3%', radius: 10 }
+      },
+      6: { 
+        leftEye: { top: '6%', left: '42%', width: '3%', radius: 3 }, // 작게 움직임
+        rightEye: { top: '6%', left: '59%', width: '3%', radius: 3 }
+      },
+      7: { 
+        leftEye: { top: '96%', left: '15%', width: '5%', radius: 5 }, // 작게 움직임
+        rightEye: { top: '89%', left: '28%', width: '5%', radius: 5 }
+      },
+      8: { 
+        leftEye: { top: '53%', left: '39%', width: '8%', radius: 10 }, // 작게 움직임
+        rightEye: { top: '52%', left: '58%', width: '8%', radius: 10 }
+      },
+  };
 
-    const side = Math.floor(Math.random() * 4);
-    const randomPos = Math.random() * 80 + 10;
-    const intrusion = (step / 19) * 45; 
-    const scale = 0.6 + (step * 0.1); 
+// 머리카락 위치 데이터
+const HAIR_POSITIONS = {
+  3: { top: '10%', left: '40%', width: '20%' },
+  9: { top: '5%', left: '45%', width: '30%' },
+};
 
-    let style = { position: 'absolute' };
-    let transform = '';
-    let pose = '';
+export const Doll = ({ step, onReset }) => {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
 
-    switch (side) {
-      case 0: // 상단 벽 -> 아래로 빼꼼 (노란색 상자)
-        style.top = `${-10 + intrusion}%`;
-        style.left = `${randomPos}%`;
-        transform = 'translate(-50%, 0)';
-        pose = 'pose-top';
-        break;
-      case 1: // 하단 벽 -> 위로 빼꼼 (초록색 상자)
-        style.bottom = `${-10 + intrusion}%`;
-        style.left = `${randomPos}%`;
-        transform = 'translate(-50%, 0)';
-        pose = 'pose-bottom';
-        break;
-      case 2: // 왼쪽 벽 -> 오른쪽으로 빼꼼 (파란색 상자)
-        style.left = `${-10 + intrusion}%`;
-        style.top = `${randomPos}%`;
-        transform = 'translate(0, -50%)';
-        pose = 'pose-left';
-        break;
-      case 3: // 오른쪽 벽 -> 왼쪽으로 빼꼼 (보라색 상자)
-        style.right = `${-10 + intrusion}%`;
-        style.top = `${randomPos}%`;
-        transform = 'translate(0, -50%)';
-        pose = 'pose-right';
-        break;
-    }
+  const pupilConfig = PUPIL_POSITIONS[step];
+  const hairConfig = HAIR_POSITIONS[step];
 
-    return { 
-      style: { ...style, transform: `${transform} scale(${scale})` },
-      pose 
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!containerRef.current || !pupilConfig) return;
+      const rect = containerRef.current.getBoundingClientRect();
+// 화면 내 마우스 위치를 -1에서 1 사이의 정규화된 방향 벡터로만 추출
+const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2; 
+const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+setMousePos({ x, y });
     };
-  });
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [step, pupilConfig]);
+
+  const baseImageStyle = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
+    pointerEvents: 'none',
+  };
+
+  // 눈알 렌더링을 위한 공통 함수
+  const renderEye = (eyeData, key) => (
+    <img 
+      key={key}
+      src={COMMON_ASSETS.pupil} 
+      style={{
+        position: 'absolute',
+        top: eyeData.top,
+        left: eyeData.left,
+        width: eyeData.width,
+// 정규화된 방향(mousePos) * 개별 설정된 이동 반경(radius)
+transform: `translate(calc(-50% + ${mousePos.x * eyeData.radius}px), calc(-50% + ${mousePos.y * eyeData.radius}px))`,
+pointerEvents: 'none',
+      }} 
+      alt={`pupil-${key}`} 
+    />
+  );
 
   return (
-    <div 
-      className={`doll ${dollData.pose}`} // 클래스에 따라 배경이미지/색상 변경
-      style={{
-        ...dollData.style,
-        width: '120px',
-        height: '180px',
-        // 이미지가 생기면 여기에 URL 넣기
-        '--doll-image': 'none', // 'url(/images/doll.png)' 로 변경하면 이미지 적용됨
-      }}
-    >
-      {/* 개발용 디버깅: 포즈 확인용 문구 */}
-      <span style={{ fontSize: '10px', color: 'white' }}>{dollData.pose}</span>
+    <div className={`doll-container step-${step}`} ref={containerRef}>
+      
+      {/* 1. 인형 몸통 */}
+      <img src={DOLL_IMAGES[step - 1]} style={baseImageStyle} alt="body" />
+
+      {/* 2. 눈알 (왼쪽, 오른쪽 각각 렌더링) */}
+      {pupilConfig && renderEye(pupilConfig.leftEye, 'left')}
+      {pupilConfig && renderEye(pupilConfig.rightEye, 'right')}
+
+      {/* 3. 머리카락 */}
+      {hairConfig && (
+        <motion.img 
+          src={COMMON_ASSETS.hair} 
+          style={{
+            position: 'absolute',
+            top: hairConfig.top,
+            left: hairConfig.left,
+            width: hairConfig.width,
+            cursor: 'grab',
+            zIndex: 10,
+          }}
+          alt="hair"
+          drag 
+          dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
+          dragElastic={0.4}
+          whileDrag={{ cursor: 'grabbing', scale: 1.05 }}
+        />
+      )}
+
+      {/* 4. 엔딩 */}
+      {step === 10 && (
+        <div className="ending-overlay">
+          <button className="reset-btn" onClick={onReset}>
+            처음부터 다시 하기
+          </button>
+        </div>
+      )}
     </div>
   );
 };
