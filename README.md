@@ -15,7 +15,7 @@ Just a persistent piece of junk.
 ## 🖼 Preview
 
 <div align="center" style="background-color: #f9f9f9; padding: 40px; border-radius: 10px;">
-  <img src="./public/preview.png" width="300" alt="doll-preview" />
+  <img src="public/preview.png" width="300" alt="doll-preview" />
 </div>
 
 ## 🛠 Tech Stack
