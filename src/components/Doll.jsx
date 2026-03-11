@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
-import { motion, useMotionValue, animate, useAnimation } from "framer-motion";
+import {
+  motion as Motion,
+  useMotionValue,
+  animate,
+  useAnimation,
+} from "framer-motion";
 import { DOLL_IMAGES, COMMON_ASSETS } from "../constants/dollAssets";
+import { EndingOverlay } from "./EndingOverlay";
 
 // ⭐️ 스텝별 눈알 크기가 다르므로, 이동 반경(radius)을 개별 제어하도록 추가
 const PUPIL_POSITIONS = {
@@ -135,7 +141,7 @@ export const Doll = ({ step, onReset, onNextStep }) => {
   return (
     <div className={`doll-container step-${step}`} ref={containerRef}>
       {/* 1. 인형 몸통 */}
-      <motion.img
+      <Motion.img
         src={DOLL_IMAGES[step - 1]}
         style={{
           ...baseImageStyle,
@@ -155,7 +161,7 @@ export const Doll = ({ step, onReset, onNextStep }) => {
 
       {/* 3. 머리카락 */}
       {hairConfig && (
-        <motion.img
+        <Motion.img
           key={`hair-${step}`}
           src={COMMON_ASSETS.hair}
           draggable={false}
@@ -196,13 +202,7 @@ export const Doll = ({ step, onReset, onNextStep }) => {
       )}
 
       {/* 4. 엔딩 */}
-      {step === 10 && (
-        <div className="ending-overlay">
-          <button className="reset-btn" onClick={onReset}>
-            처음부터 다시 하기
-          </button>
-        </div>
-      )}
+      {step === 10 && <EndingOverlay onReset={onReset} />}
     </div>
   );
 };
