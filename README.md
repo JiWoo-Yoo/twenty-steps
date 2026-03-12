@@ -1,6 +1,7 @@
 # Twenty Steps (MVP)
 
-Just a persistent piece of junk.
+Just a persistent piece of junk. Come find me again before I'm buried in dust.
+
 20단계 기획 중 10단계까지 구현된 MVP 버전입니다.
 
 ## 🔗 Live Demo
